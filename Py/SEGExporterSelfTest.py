@@ -84,16 +84,17 @@ class SEGExporterSelfTestTest(ScriptedLoadableModuleTest):
     qt.QDir().mkpath(dicomFilesDirectory)
     slicer.app.applicationLogic().Unzip(filePath, dicomFilesDirectory)
 
+    originalDatabaseDirectory = None
     try:
       self.delayDisplay("Switching to temp database directory")
       tempDatabaseDirectory = slicer.app.temporaryPath + '/tempDICOMDatabase'
-      import shutil
-      shutil.rmtree(tempDatabaseDirectory)
+      if os.path.exists(tempDatabaseDirectory):
+        import shutil
+        shutil.rmtree(tempDatabaseDirectory)
       qt.QDir().mkpath(tempDatabaseDirectory)
       if slicer.dicomDatabase:
         originalDatabaseDirectory = os.path.split(slicer.dicomDatabase.databaseFilename)[0]
       else:
-        originalDatabaseDirectory = None
         settings = qt.QSettings()
         settings.setValue('DatabaseDirectory', tempDatabaseDirectory)
       dicomWidget = slicer.modules.dicom.widgetRepresentation().self()
